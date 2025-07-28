@@ -6,7 +6,6 @@ on:
     - cron: '0 1 * * *'   # 10:00 KST
     - cron: '0 4 * * *'   # 13:00 KST
     - cron: '0 8 * * *'   # 17:00 KST
-    - cron: '0 12 * * *'  # 21:00 KST
     - cron: '0 13 * * *'  # 22:00 KST
   workflow_dispatch:
 
