@@ -1,0 +1,42 @@
+name: Update AI News
+on:
+  schedule:
+    - cron: '0 22 * * *'  # 07:00 KST
+    - cron: '0 1 * * *'   # 10:00 KST
+    - cron: '0 4 * * *'   # 13:00 KST
+    - cron: '0 8 * * *'   # 17:00 KST
+    - cron: '0 12 * * *'  # 21:00 KST
+    - cron: '0 13 * * *'  # 22:00 KST
+  workflow_dispatch:
+
+jobs:
+  update-news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - run: |
+          pip install --upgrade pip
+          pip install openai
+      - name: Fetch latest AI news and save to dated file
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          DATE=$(date +"%Y-%m-%d")
+          OUTPUT_FILE="News/${DATE}.md"
+          mkdir -p News
+          python scripts/fetch_ai_news.py \
+            --output "$OUTPUT_FILE" \
+            --categories "Large Language Models & Conversational AI,Generative AI & AI Art Generators,Executive & Company News,Industry Insights & Thought Leadership" \
+            --max-items 10
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add News/*.md
+          git diff --quiet || {
+            git commit -m "chore: update AI news summary for $DATE"
+            git push
+          }
