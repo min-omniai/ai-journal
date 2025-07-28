@@ -1,3 +1,4 @@
+# .github/workflows/news_update.yml
 name: Update AI News
 on:
   schedule:
@@ -26,11 +27,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install openai==0.28
 
-      - name: Fetch latest AI news and save to dated file
+      - name: Fetch latest AI news and save to timestamped file
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          DATE=$(date +"%Y-%m-%d")
+          DATE=$(date +"%Y-%m-%d-%H:%M:%S")
           OUTPUT_FILE="News/${DATE}.md"
           mkdir -p News
           python scripts/fetch_ai_news.py \
@@ -42,7 +43,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add News/*.md
-          git diff --quiet || {
-            git commit -m "chore: update AI news summary for $DATE"
-            git push
-          }
+          git commit -m "chore: update AI news summary for $DATE"
+          git push
