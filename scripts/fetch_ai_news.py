@@ -13,17 +13,37 @@ def collect_urls(rss_urls, max_per_source=5):
     return urls
 
 def fetch_news(max_items):
-    # RSS 소스 목록
+# scripts/fetch_ai_news.py – 확장된 RSS 소스 목록
     rss_sources = [
-        "https://techcrunch.com/tag/artificial-intelligence/feed/",
-        "https://venturebeat.com/category/ai/feed/",
-        "https://openai.com/blog/rss/",
-        "https://midjourney.com/blog/rss/",
-        "https://ai.googleblog.com/feeds/posts/default?alt=rss",
-        "https://lexfridman.com/feed/podcast/",
-        "https://twitrss.com/TwoMinutePapers",
-        "https://twitrss.com/openai"
+        # 기존 피드
+        "https://techcrunch.com/tag/artificial-intelligence/feed/",          # AI 전반, LLM·챗봇 포함
+        "https://venturebeat.com/category/ai/feed/",                         # AI 기업 전략·제품 소식
+        "https://openai.com/blog/rss/",                                      # OpenAI 공식 블로그
+        "https://midjourney.com/blog/rss/",                                  # Midjourney 업데이트
+        "https://ai.googleblog.com/feeds/posts/default?alt=rss",             # Google AI 블로그
+        "https://lexfridman.com/feed/podcast/",                              # Lex Fridman 팟캐스트
+        "https://twitrss.com/TwoMinutePapers",                               # Two Minute Papers 트윗 요약
+        "https://twitrss.com/openai",                                        # OpenAI 트위터 요약
+    
+        # 대형 언어 모델 & 대화형 AI
+        "https://blog.google/products/gemini/feed/",                         # Google Gemini 소식
+        "https://huggingface.co/blog/rss.xml",                               # Hugging Face 신제품·연구
+    
+        # 생성형 AI & AI 아트 생성기
+        # (기존 Midjourney 외)
+        "https://stable-diffusion-web.com/feed/",                             # Stable Diffusion 커뮤니티 업데이트
+        "https://nightcafe.studio/blog/feed/",                                # NightCafe AI 아트 생성
+    
+        # AI 기업 및 CEO 경영진 동향·기업 소식
+        "https://about.fb.com/news/category/ai/feed/",                       # Meta AI 소식
+        "https://blogs.microsoft.com/feed/ai/",                              # Microsoft AI 블로그
+        "https://blogs.nvidia.com/feed/",                                     # NVIDIA 기술·CEO 발표
+    
+        # 산업 인사이트 & 사고 리더십
+        "https://www.technologyreview.com/feed/",                            # MIT Tech Review AI 섹션
+        "https://arxiv.org/rss/cs.AI",                                       # arXiv AI 최신 논문
     ]
+
 
     # URL 수집
     all_urls = collect_urls(rss_sources, max_per_source=5)
