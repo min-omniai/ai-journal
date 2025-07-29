@@ -1,7 +1,13 @@
 # .github/workflows/news_update.yml
 name: Update AI News
+# ❗ GITHUB_TOKEN에 쓰기 권한을 명시
+permissions:
+  contents: write
+
 on:
   schedule:
+    # (생략)
+
     - cron: '0 22 * * *'  # 07:00 KST
     - cron: '0 1 * * *'   # 10:00 KST
     - cron: '0 4 * * *'   # 13:00 KST
@@ -15,6 +21,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # ② 푸시 가능한 토큰을 명시
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
