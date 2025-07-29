@@ -96,6 +96,11 @@ def main():
     args = parser.parse_args()
 
     openai.api_key = os.getenv("OPENAI_API_KEY")
+
+    # ▶ 디렉터리 보장
+    output_dir = os.path.dirname(args.output)
+    os.makedirs(output_dir, exist_ok=True)
+    
     urls = collect_recent_urls(rss_sources, hours=4, per_source=args.max_items)
     if not urls:
         print("최근 4시간 내 신규 뉴스가 없습니다. 스킵합니다.")
