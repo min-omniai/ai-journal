@@ -6,13 +6,8 @@ permissions:
 
 on:
   schedule:
-    # (생략)
-
-    - cron: '0 22 * * *'  # 07:00 KST
-    - cron: '0 1 * * *'   # 10:00 KST
-    - cron: '0 4 * * *'   # 13:00 KST
-    - cron: '0 8 * * *'   # 17:00 KST
-    - cron: '0 13 * * *'  # 22:00 KST
+    # 0분에, UTC 시각 15,19,23,3,7,11시에 트리거
+    - cron: '0 15,19,23,3,7,11 * * *'
   workflow_dispatch:
 
 jobs:
