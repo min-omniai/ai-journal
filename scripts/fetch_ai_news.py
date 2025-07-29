@@ -12,9 +12,7 @@ rss_sources = [
     "https://venturebeat.com/category/ai/feed/",                         # AI 기업 전략·제품 소식
     "https://openai.com/blog/rss/",                                      # OpenAI 공식 블로그
     "https://midjourney.com/blog/rss/",                                  # Midjourney 업데이트
-    "https://ai.googleblog.com/feeds/posts/default?alt=rss",             # Google AI 블로그
     "https://lexfridman.com/feed/podcast/",                              # Lex Fridman 팟캐스트
-    "https://twitrss.com/TwoMinutePapers",                               # Two Minute Papers 트윗 요약
     "https://twitrss.com/openai",                                        # OpenAI 트위터 요약
 
     # 대형 언어 모델 & 대화형 AI
@@ -36,30 +34,33 @@ rss_sources = [
     "https://arxiv.org/rss/cs.AI",                                       # arXiv AI 최신 논문
 ]
 
-def collect_recent_urls(rss_urls, hours=4, per_source=5):
+def collect_recent_items(rss_urls, hours=4, per_source=5):
     cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
-    urls = []
+    items = []
     for rss in rss_urls:
         feed = feedparser.parse(rss)
         count = 0
         for entry in feed.entries:
-            # published_parsed 없으면 건너뛰기
             if not hasattr(entry, 'published_parsed'):
                 continue
             published = datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
             if published < cutoff:
                 continue
-            urls.append(entry.link)
+            items.append((entry.link, published))
             count += 1
             if count >= per_source:
                 break
-    return urls
+    return items
 
-def fetch_news(urls):
-    md_list = "\n".join(f"- {u}" for u in urls)
+def fetch_news(items):
+    # ★ 날짜를 함께 Markdown 리스트로
+    md_list = "\n".join(
+        f"- **발표 시각**: {dt.astimezone(timezone(timedelta(hours=9))).strftime('%Y-%m-%d %H:%M')}  \n  **링크**: {url}"
+        for url, dt in items
+    )
     prompt = f"""
 당신은 매일 최신 AI 뉴스를 한국어로 큐레이션하는 전문가입니다.  
-다음 URL들의 기사를 최신순으로 요약하고 두괄식 설명·인사이트를 포함하세요:
+다음 **발표 시각과 링크**에 대해, 최신순으로 각 기사를 요약하고 두괄식 설명·인사이트를 포함하세요:
 
 {md_list}
 
