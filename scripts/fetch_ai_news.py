@@ -102,12 +102,14 @@ def main():
     output_dir = os.path.dirname(args.output)
     os.makedirs(output_dir, exist_ok=True)
     
-    urls = collect_recent_urls(rss_sources, hours=4, per_source=args.max_items)
-    if not urls:
+    # ▶ URL+날짜 쌍을 가져오는 새 함수 호출
+    items = collect_recent_items(rss_sources, hours=4, per_source=args.max_items)
+    if not items:
         print("최근 4시간 내 신규 뉴스가 없습니다. 스킵합니다.")
         return
 
-    news_md = fetch_news(urls)
+    news_md = fetch_news(items)
+    
     date = os.path.basename(args.output).replace(".md", "")
     with open(args.output, "w", encoding="utf-8") as f:
         f.write(f"# AI 뉴스 요약 — {date}\n\n")
