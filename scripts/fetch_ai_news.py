@@ -36,29 +36,32 @@ rss_sources = [
     "https://arxiv.org/rss/cs.AI",                                       # arXiv AI 최신 논문
 ]
 
-def collect_recent_urls(rss_urls, hours=4, max_per_source=5):
+def collect_recent_urls(rss_urls, hours=4, per_source=5):
     cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
     urls = []
     for rss in rss_urls:
         feed = feedparser.parse(rss)
+        count = 0
         for entry in feed.entries:
+            # published_parsed 없으면 건너뛰기
             if not hasattr(entry, 'published_parsed'):
                 continue
             published = datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
             if published < cutoff:
                 continue
             urls.append(entry.link)
-            if len(urls) >= max_per_source:
+            count += 1
+            if count >= per_source:
                 break
     return urls
 
-def fetch_news(urls_to_summarize):
-    url_list_md = "\n".join(f"- {u}" for u in urls_to_summarize)
+def fetch_news(urls):
+    md_list = "\n".join(f"- {u}" for u in urls)
     prompt = f"""
 당신은 매일 최신 AI 뉴스를 한국어로 큐레이션하는 전문가입니다.  
 다음 URL들의 기사를 최신순으로 요약하고 두괄식 설명·인사이트를 포함하세요:
 
-{url_list_md}
+{md_list}
 
 각 항목은 아래 형식으로 작성하세요:
 
@@ -79,72 +82,22 @@ def fetch_news(urls_to_summarize):
     return resp.choices[0].message.content
 
 def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--output", required=True, help="출력할 마크다운 파일 경로")
-    p.add_argument("--max-items", type=int, default=10, help="최대 뉴스 개수")
-    args = p.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", required=True, help="출력할 마크다운 파일 경로")
+    parser.add_argument("--max-items", type=int, default=10, help="피드당 최대 뉴스 개수")
+    args = parser.parse_args()
 
     openai.api_key = os.getenv("OPENAI_API_KEY")
-
-    recent = collect_recent_urls(rss_sources, hours=4, max_per_source=args.max_items)
-    if not recent:
+    urls = collect_recent_urls(rss_sources, hours=4, per_source=args.max_items)
+    if not urls:
         print("최근 4시간 내 신규 뉴스가 없습니다. 스킵합니다.")
         return
 
-    content = fetch_news(recent)
+    news_md = fetch_news(urls)
     date = os.path.basename(args.output).replace(".md", "")
     with open(args.output, "w", encoding="utf-8") as f:
         f.write(f"# AI 뉴스 요약 — {date}\n\n")
-        f.write(content)
+        f.write(news_md)
 
 if __name__ == "__main__":
     main()
-최종 news_update.yml (GitHub Actions 워크플로우 예시)
-
-yaml
-복사
-편집
-name: Update AI News
-
-on:
-  schedule:
-    # UTC 기준 매 4시간마다(00,04,08,12,16,20 UTC) → KST 09,13,17,21,01,05
-    - cron: '0 */4 * * *'
-
-jobs:
-  crawl-and-push:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install feedparser openai
-
-      - name: Fetch AI News
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          python scripts/fetch_ai_news.py \
-            --output news/$(date +'%Y-%m-%d %H:%M').md \
-            --max-items 10
-
-      - name: Commit & Push if changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add news/*.md
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: update AI news summary for $(date +'%Y-%m-%d %H:%M')"
-            git push
-          else
-            echo "No changes to commit, skipping."
-          fi
