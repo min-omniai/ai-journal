@@ -73,7 +73,15 @@ def fetch_news(urls):
 **인사이트**: [트렌드 해석 및 시사점]  
 **원문 링크**: [읽으러 가기](<기사 URL>)  
 """
-    resp = openai.ChatCompletion.create(
+    # resp = openai.ChatCompletion.create(
+    #     model="gpt-4o-mini",
+    #     messages=[{"role": "user", "content": prompt}],
+    #     temperature=0.3,
+    #     max_tokens=1500,
+    # )
+
+    # OpenAI Python SDK v1+ 용 호출 방식
+    resp = openai.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.3,
