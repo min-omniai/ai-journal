@@ -28,7 +28,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           python scripts/fetch_ai_news.py \
-            --output news/$(date +'%Y-%m-%d %H:%M').md \
+            --output news/$(date +'%Y-%m-%d-%H%M').md \
             --max-items 10
 
       - name: Commit & Push if changes
@@ -37,7 +37,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add news/*.md
           if ! git diff --cached --quiet; then
-            git commit -m "chore: update AI news summary for $(date +'%Y-%m-%d %H:%M')"
+            git commit -m "chore: update AI news summary for $(date +'%Y-%m-%d-%H%M')"
             git push
           else
             echo "No changes to commit, skipping."
