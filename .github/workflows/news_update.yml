@@ -1,5 +1,8 @@
 name: Update AI News
 
+permissions:
+  contents: write
+
 on:
   schedule:
     # UTC 기준 매 4시간마다 (00,04,08,12,16,20 UTC)
@@ -13,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0           # 전체 히스토리 가져오기 (commit 비교용)
+          persist-credentials: true  # GITHUB_TOKEN을 git push에 자동 사용
 
       - name: Setup Python
         uses: actions/setup-python@v4
