@@ -24,6 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install feedparser openai
 
+      - name: Ensure news directory
+        run: mkdir -p news
+
       - name: Fetch AI News
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
