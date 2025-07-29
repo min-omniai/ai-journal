@@ -34,7 +34,7 @@ rss_sources = [
     "https://arxiv.org/rss/cs.AI",                                       # arXiv AI 최신 논문
 ]
 
-def collect_recent_items(rss_urls, hours=4, per_source=5):
+def collect_recent_items(rss_urls, hours=4, per_source=20):
     cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
     items = []
     for rss in rss_urls:
