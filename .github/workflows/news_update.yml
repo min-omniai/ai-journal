@@ -4,6 +4,7 @@ on:
   schedule:
     # UTC 기준 매 4시간마다 (00,04,08,12,16,20 UTC)
     - cron: '0 */4 * * *'
+  workflow_dispatch:
 
 jobs:
   crawl-and-push:
