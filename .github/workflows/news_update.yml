@@ -31,7 +31,7 @@ jobs:
           pip install feedparser openai
 
       - name: Ensure news directory
-        run: mkdir -p news
+        run: mkdir -p News
 
       - name: Fetch AI News
         env:
@@ -40,16 +40,16 @@ jobs:
           # 한국시간 기준 파일명 생성
           DATE=$(date -u -d '+9 hours' +'%Y-%m-%d-%H%M')
           python scripts/fetch_ai_news.py \
-            --output news/${DATE}.md \
+            --output News/${DATE}.md \
             --max-items 10
 
       - name: Commit & Push if changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add news/*.md
+          git add News/*.md
           if ! git diff --cached --quiet; then
-            git commit -m "chore: update AI news summary for ${DATE}"
+            git commit -m "chore: update AI News summary for ${DATE}"
             git push
           else
             echo "No changes to commit, skipping."
