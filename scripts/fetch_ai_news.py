@@ -86,14 +86,14 @@ def fetch_news(items):
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.3,
-        max_tokens=1500,
+        max_tokens=3000,
     )
     return resp.choices[0].message.content
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True, help="출력할 마크다운 파일 경로")
-    parser.add_argument("--max-items", type=int, default=20, help="피드당 최대 뉴스 개수")
+    parser.add_argument("--max-items", type=int, default=10, help="피드당 최대 뉴스 개수")
     args = parser.parse_args()
 
     openai.api_key = os.getenv("OPENAI_API_KEY")
