@@ -3,7 +3,7 @@ _2025-08-27 · Tags: AI-News-Pipeline, Make.com, RSS.app, Apify, Perplexity, Cla
 
 ---
 
-## TL;DR(결론)
+## 🔥🔥🔥
 **목표**: AI 뉴스 스레드를 자동 생성·업로드하는 파이프라인을 만들었다.  
 **설계**: RSS.app → **Apify**(기사 추출) → LLM(Perplexity/Claude 요약·한글화) → 포맷터(스레드 규칙 적용) → `---` 분리(본문/댓글) → **Notion** 저장 → Buffer 예약 업로드.  
 **결과 요약**: 동작은 했으나, 실운영에서 **Apify 적용 난이도/안정성 이슈**와 **Notion의 실용성 부족**이 드러남. 다음 버전에서 경량화 예정(v1.1).
