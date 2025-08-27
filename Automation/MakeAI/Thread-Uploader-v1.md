@@ -22,7 +22,7 @@ _2025-08-27 · Tags: AI-News-Pipeline, Make.com, RSS.app, Apify, Perplexity, Cla
 
 ### 1) Planner
 - **요구사항**
-  - 150~280자, 존댓말, 불릿 ≥1, 마지막에 질문/CTA.
+  - 150~450자, 존댓말, 불릿 ≥1, 마지막에 질문/CTA.
   - 댓글용 추가 설명은 `---` 아래로 분리.
   - 이미지 1~4장(중복/로고/배지 제외).
 - **성공 기준(KPI)**
@@ -39,17 +39,16 @@ graph TD
     A1 --> F1[Formatter/Normalizer]
     F1 --> L1[LLM: Perplexity/Claude]
     L1 --> P1[Post Formatter: 스레드 규칙 적용]
-    P1 --> S1[Section Splitter: '---']
     S1 --> N1[Notion DB: Queue/Ready]
     S1 --> B1[Buffer: Create Post]
     B1 --> CH[Threads/X/IG 등]
 ```
 
-#### RSS.app (Trigger)
+#### 1️⃣ RSS.app (Trigger)
 - Fields: `title`, `url`, `published_at`, `content_html?`, `summary?`
 - **중복 방지(초기안)**: Notion에서 `url` 존재 여부 조회 → 중단
 
-#### Apify (Run an Actor: `article-extractor-smart`)
+#### 2️⃣ Apify (Run an Actor: `article-extractor-smart`)
 - Input JSON(권장):
 ```json
 {
@@ -60,7 +59,7 @@ graph TD
 ```
 - Output: `text`, `html`, `images[]`, `meta(og:image, ... )`
 
-#### Image Parse (Regex + Aggregator)
+#### 3️⃣ Image Parse (Regex + Aggregator)
 - 1순위: `images[]` (Apify)
 - 2순위: `html`에서 추출(최대 4장, 중복/로고/광고 제외)
 ```regex
@@ -69,7 +68,7 @@ graph TD
 - 백업: `og:image` 메타 추출
 - 결과: `images[]`(≤4), `thumbnail = images[0]`
 
-#### LLM 요약/포맷 (Perplexity/Claude)
+#### 4️⃣ LLM 요약/포맷 (Perplexity/Claude)
 - 입력: `title`, `url`, `published_at`, `clean_text`, `images[0..3]`
 - 규칙(요약):  
   1) Hook(질문/감탄)  
@@ -77,13 +76,10 @@ graph TD
   3) 불릿 ≥1(📌 또는 -)  
   4) 마지막 질문(인사이트)/CTA  
 
-#### Split
-- `---` 문자열 기준 → `post_text`, `comment_text|null`
-
-#### Notion (Create Page)
+#### 5️⃣ Notion (Create Page)
 - 필드: `Name=title`, `Source=url`, `Post`, `Comment`, `Images`, `Status=Ready`, `Channel=Threads`
 
-#### Buffer (Create Post)
+#### 6️⃣ Buffer (Create Post)
 - 본문: `post_text`
 - 이미지: 대표 1장 기본(가능 채널만 최대 4장 시도)
 - 예약: `published_at` 또는 사용자 지정
@@ -116,9 +112,8 @@ graph TD
 - [ ] RSS 아이템 `url` 기준 중복 차단
 - [ ] Apify 결과 존재(`text|html|images` 중 하나 이상)
 - [ ] 이미지 1장 이상 or 안전 폴백(og:image)
-- [ ] 150~280자/불릿≥1/질문형 마무리 규칙 충족
-- [ ] `---` 분리 동작 확인
-- [ ] Buffer 응답 2xx, 중복·길이 초과 없음
+- [ ] 150~450자/불릿≥1/질문형 마무리 규칙 충족
+- [ ] Buffer 응답, 중복·길이 초과 없음
 
 ---
 
