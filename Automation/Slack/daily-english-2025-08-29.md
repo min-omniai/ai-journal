@@ -1,4 +1,4 @@
-# 📦 Daily English Quiz Auto-Grader — Dev Log (v1.1)
+# 📦 Daily English Quiz Auto-Grader — Dev Log (v1.0)
 
 > Google Sheet → Apps Script → Slack 매일 7시 영어 학습 발송 (단어·구어체 5 + 문법 1)
 
