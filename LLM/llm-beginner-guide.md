@@ -35,10 +35,13 @@ LLM이 학습하는 데이터:
 **결과**: 다양한 언어 패턴과 광범위한 지식 습득
 
 <img width="496" height="294" alt="image" src="https://github.com/user-attachments/assets/c3f93996-6ce3-4807-a7c9-9d7ea89f4024" />
+
 1. Chat GPT와 같은 ai모델 + 사용자 입력
+
 2. 사용자 입력 (=질문 입력)
+
 3. 사용자 입력을 받아 검색해서 얻는 정보들
-4. 방대한 언어들
+
 5. 3번 과정을 거쳐서 내놓는 답변
 
 ---
